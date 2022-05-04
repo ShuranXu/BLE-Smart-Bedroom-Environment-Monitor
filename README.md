@@ -60,5 +60,63 @@ As the system is composed of both the client device and the server device, the e
 
 ### Client Device
 
+According to the sequence of states that the client device needs to go through, as well as the required functionality of user input handling, the energy consumption on the client device can be analyzed in multiple cases, each of which represents a particular operating state that the client has to go through during its operational lifetime. The following are the key phrases of the client device goes through:
 
+1.GATT Service Discovery
 
+![alt text](./images/discover_services.png)
+
+During the service discovery phase, the client discovers all GATT services and the associated GATT characteristics prior to handling user inputs. In this stage, the average consumed current is 1.31 mA, meaning that the client is in EM1 mode.
+
+2.Push Button Presses
+
+![alt text](./images/push_button.png)
+
+The big square wave highlighted in the energy profiler represents the button pressed by the user. This scenario indicates the user is providing setting values to the client device. And the average current consumed for this activity is about 5.05 mA, meaning that the client is in EM0 mode when handling the user inputs.
+
+3.Writing GATT characteristic values to the server
+
+![alt text](./images/write_gatt_values.png)
+
+This is the current consumption when the client is writing values to GATT DB. This happens right after the user inputs the values and the client starts writing optimal values to DB. The average current consumed is 2.07 mA. The small spikes are caused by the state machines running on the client for handling user inputs and writing GATT characteristic values to the server.
+
+### Server Device
+
+According to the sequence of states that the server device needs to go through, as well as the required functionality of sensor reading and environment adjustment, the energy consumption on the server device can be analyzed in several cases, each of which represents a particular operating state that the server has to go through during its operational lifetime. The following are the key phrases of the server device goes through:
+
+1.Sampling sensors’ readings
+
+![alt text](./images/sensor_reading.png)
+
+When the server is in idle state, the server will sample the sensor's values. During the sampling period, all three sensors’ values will be sampled and the spikes shown in the highlighted area represent interrupts triggered by ADC0 and I2C0 to notify the server that data is available. The consumed current for this process is around 2.00 mA, meaning that the server is in EM1 mode. 
+
+2.Adjusting the bedroom environment
+
+![alt text](./images/adjust_env.png)
+
+Upon receiving GATT characteristic values from the client, the server stops sampling sensors’ values but displays the optimal values from the client. In this process, only the LETIMER0 and soft timer will trigger interrupts, which are shown in the highlighted interval. The average current in this stage is 1.98 mA, meaning that the server is in EM1 mode, but the server could have been in EM2 mode if sensors and the peripherals are turned off as expected. 
+
+## Demo Screenshots
+
+The following screenshots are taken when performing a LIVE demo, and these screenshots together demonstrate the typical usage of the system.
+
+The client device is initializing:
+![alt text](./images/init_client.jpg)
+
+The server device is reading sensors' values:
+![alt text](./images/sensor_read.jpg)
+
+The user is inputting the sleep time:
+![alt text](./images/input_sleep_time.jpg)
+
+The user is inputting the time reference:
+![alt text](./images/input_ref.jpg)
+
+The user is inputting the sleep hours:
+![alt text](./images/input_sleep_hrs.jpg)
+
+The server is adjusting the bedroom environment:
+![alt text](./images/server_adjusting_env.jpg)
+
+The client is updating the remaining sleep hours:
+![alt text](./images/client_changing_sleep_hrs.jpg)
